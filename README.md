@@ -1,0 +1,2 @@
+# GNUpherd
+Lightweight Text Editor
