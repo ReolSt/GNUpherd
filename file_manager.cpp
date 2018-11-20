@@ -13,20 +13,19 @@ read_file(const std::string& fname)  {
 
 bool FileManager::
 write_file(const std::string& fname,
-                const std::deque<std::string>& buf) {
+                const std::string& buf) {
   std::ofstream file(fname);
   if(file.fail()) {
     return false;
   }
-  for(auto i : buf) {
-    file << i << "\n";
-  }
+  file << buf;
+  file.close();
   return true;
 }
 
 const std::string& FileManager::
 list_directory() {
-  std::string command = "cd " + _path + "&& ls -l";
+  std::string command = "cd " + _path + " && ls -l";
   FILE *fp = popen(command.c_str(),"r");
   char buf[999];
   if(fp == NULL) {
@@ -36,6 +35,7 @@ list_directory() {
   while(fgets(buf,900,fp)) {
     _command_output.append(buf);
   }
+  pclose(fp);
   return _command_output;
 }
 
@@ -52,4 +52,13 @@ change_directory(const std::string& dname) {
     _path+= "/" + dname + (dname.back()=='/'?"":"/");
   }
   return true;
+}
+
+bool FileManager::
+change_directory_full(const std::string& dname) {
+    if(dname[0] == '/') {
+        _path=dname;
+        return true;
+    }
+    return false;
 }
